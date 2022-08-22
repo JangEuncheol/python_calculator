@@ -1,1 +1,3 @@
-print('Hello, World!')
+from View import CalculatorView
+
+CalculatorView.CalculatorView()
