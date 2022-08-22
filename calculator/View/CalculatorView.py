@@ -22,7 +22,6 @@ class CalculatorView():
         self.operator_click = False
 
     def _render_calculator(self):
-        print('self._render_calculator(self) execute')
         root = Tk()
         frame = ttk.Frame(root, padding=10)
         frame.grid()
@@ -42,7 +41,6 @@ class CalculatorView():
         closeBtn.grid(row = 11, column = 4)
         
     def _make_number_btn(self, frame):
-        print('self_make_number_btn execute')
         for number in range(0, 9):
             globals()[f"numberBtn{number + 1}"] = None
             self.numberBtnList.append(f"numberBtn{number + 1}")
@@ -54,7 +52,6 @@ class CalculatorView():
         )
         zeroBtn.grid(row = 5, column = 2)
     
-        
     def _make_1_to_9_btn(self, frame, btn, number):
         btn = ttk.Button(
             frame, text=number + 1,
@@ -88,8 +85,8 @@ class CalculatorView():
             command=lambda: self._on_operator_btn_click_event('-')
         )
         minusBtn.grid(row=self.NUM_START_ROW + 2, column=4)
+        
     def _on_number_btn_click_event(self, number):
-        print(f"{number} Button Clicked")
         self._allocate_number(number)
         self._display_selected_btn(number)
         
