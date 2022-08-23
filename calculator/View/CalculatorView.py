@@ -51,15 +51,6 @@ class CalculatorView():
             command=lambda: self._on_number_btn_click_event(0)
         )
         zeroBtn.grid(row = 5, column = 2)
-    
-    def _make_1_to_9_btn(self, frame, btn, number):
-        btn = ttk.Button(
-            frame, text=number + 1,
-            command=lambda: self._on_number_btn_click_event(number + 1)
-        )
-        btn.grid(
-            row=int(number / 3) + self.NUM_START_ROW, column=(number % 3)
-        )
 
     def _make_operator_btn(self, frame):
         divideBtn = ttk.Button(
@@ -85,6 +76,21 @@ class CalculatorView():
             command=lambda: self._on_operator_btn_click_event('-')
         )
         minusBtn.grid(row=self.NUM_START_ROW + 2, column=4)
+        
+        braketBtn = ttk.Button(
+            frame, text = '()',
+            command=lambda: self._on_operator_btn_click_event('()')
+        )
+        braketBtn.grid(row=self.NUM_START_ROW - 1, column=3)
+        
+    def _make_1_to_9_btn(self, frame, btn, number):
+        btn = ttk.Button(
+            frame, text=number + 1,
+            command=lambda: self._on_number_btn_click_event(number + 1)
+        )
+        btn.grid(
+            row=int(number / 3) + self.NUM_START_ROW, column=(number % 3)
+        )
         
     def _on_number_btn_click_event(self, number):
         self._allocate_number(number)
