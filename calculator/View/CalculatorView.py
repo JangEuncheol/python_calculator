@@ -12,9 +12,9 @@ class CalculatorView():
         self._render_calculator()
 
     def _init_default_value(self):
-        self.passiveNum = None
-        self.operator = None
-        self.activeNum = None
+        self.passiveNum = ''
+        self.operator = ''
+        self.activeNum = ''
         self.numberBtnList = []
         self.passiveNumList = []
         self.activeNumList = []
@@ -105,14 +105,27 @@ class CalculatorView():
 
     def _on_number_btn_click_event(self, number):
         self._make_operand_list(number)
-        self._display_selected_btn(number)
+        self._display_selected_btn()
         
     def _on_operator_btn_click_event(self, operator):
         self.operator_click = True
         self._allocate_operator_variable(operator)
-        self._display_selected_btn(operator)
+        self._display_selected_btn()
 
-    def _display_selected_btn(self, btnText):
-        print(f"displayBtn: {btnText}")
+    def _display_selected_btn(self):
+        if self.operator_click == False:
+            displayNum = self._change_list_to_number(self.passiveNumList)
+        else:
+            displayNum = self._change_list_to_number(self.activeNumList)
+
+        print(f"displayNum: {displayNum}")
         
-        
+    def _change_list_to_number(self, list):
+        print(f"list: {list}")
+        print(f"self.operator_click: {self.operator_click}")
+        result = self.passiveNum if self.operator_click is False else self.activeNum
+        print(f"result: {result}")
+        for char in list:
+            print(f"char: {char}")
+            result += str(char)
+        return result
