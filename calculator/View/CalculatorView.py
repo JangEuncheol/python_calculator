@@ -33,12 +33,12 @@ class CalculatorView():
         root.mainloop()
     
     def _make_calculator_frame(self, root, frame):
-        titleLabel = ttk.Label(frame, text = 'PyCalc')
-        titleLabel.grid(row=0, column=0)
-        displayEntry = ttk.Entry(frame)
-        displayEntry.grid(row = 0, column = 1, columnspan=3)
+        displayRecordEntry = ttk.Entry(frame)
+        displayRecordEntry.grid(row=1, column=2, columnspan=2)
+        displayInputEntry = ttk.Entry(frame)
+        displayInputEntry.grid(row=2, column=2, columnspan=2)
         closeBtn = ttk.Button(frame, text='Close', command = root.destroy)
-        closeBtn.grid(row = 11, column = 4)
+        closeBtn.grid(row=11, column=3)
         
     def _make_number_btn(self, frame):
         for number in range(0, 9):
