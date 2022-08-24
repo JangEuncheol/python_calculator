@@ -4,7 +4,7 @@ from VO import NumberVO
 from VO.OperatorVO import OperatorVO
 
 class CalculatorView():
-    NUM_START_ROW = 3
+    NUM_START_ROW = 4
     
     def __init__(self):
         print('CalculatorView.__init__()')
@@ -25,20 +25,22 @@ class CalculatorView():
         root = Tk()
         frame = ttk.Frame(root, padding=10)
         frame.grid()
+        frame.bind('<Key>', self._on_key_press)
         
         self._make_calculator_frame(root, frame)
         self._make_number_btn(frame)
         self._make_operator_btn(frame)
         
+        frame.focus_set()
         root.mainloop()
     
     def _make_calculator_frame(self, root, frame):
-        displayRecordEntry = ttk.Entry(frame)
-        displayRecordEntry.grid(row=1, column=2, columnspan=2)
-        displayInputEntry = ttk.Entry(frame)
-        displayInputEntry.grid(row=2, column=2, columnspan=2)
+        self.displayRecordEntry = ttk.Entry(frame)
+        self.displayRecordEntry.grid(row=1, column=2, columnspan=3)
+        self.displayInputEntry = ttk.Entry(frame)
+        self.displayInputEntry.grid(row=2, column=2, columnspan=3)
         closeBtn = ttk.Button(frame, text='Close', command = root.destroy)
-        closeBtn.grid(row=11, column=3)
+        closeBtn.grid(row=8, column=3)
         
     def _make_number_btn(self, frame):
         for number in range(0, 9):
@@ -48,14 +50,14 @@ class CalculatorView():
                         
         zeroBtn = ttk.Button(
             frame, text = 0,
-            command=lambda: self._on_number_btn_click_event(0)
+            command=lambda: self._on_number_selected_event(0)
         )
         zeroBtn.grid(row = 5, column = 2)
 
     def _make_1_to_9_btn(self, frame, btn, number):
         btn = ttk.Button(
             frame, text=number + 1,
-            command=lambda: self._on_number_btn_click_event(number + 1)
+            command=lambda: self._on_number_selected_event(number + 1)
         )
         btn.grid(
             row=int(number / 3) + self.NUM_START_ROW, column=(number % 3)
@@ -64,33 +66,33 @@ class CalculatorView():
     def _make_operator_btn(self, frame):
         divideBtn = ttk.Button(
             frame, text = '/',
-            command=lambda: self._on_operator_btn_click_event('/')
+            command=lambda: self._on_operator_selected_event('/')
         )
         divideBtn.grid(row=self.NUM_START_ROW - 1, column=3)
         
         multiflyBtn = ttk.Button(
             frame, text = 'X',
-            command=lambda: self._on_operator_btn_click_event('X')
+            command=lambda: self._on_operator_selected_event('X')
         )
         multiflyBtn.grid(row=self.NUM_START_ROW, column=3)
         
         plusBtn = ttk.Button(
             frame, text = '+',
-            command=lambda: self._on_operator_btn_click_event('+')
+            command=lambda: self._on_operator_selected_event('+')
         )
         plusBtn.grid(row=self.NUM_START_ROW + 1, column=3)
         
         minusBtn = ttk.Button(
             frame, text = '-',
-            command=lambda: self._on_operator_btn_click_event('-')
+            command=lambda: self._on_operator_selected_event('-')
         )
         minusBtn.grid(row=self.NUM_START_ROW + 2, column=3)
         
-        braketBtn = ttk.Button(
-            frame, text = '()',
-            command=lambda: self._on_operator_btn_click_event('()')
-        )
-        braketBtn.grid(row=self.NUM_START_ROW - 1, column=2)
+        # braketBtn = ttk.Button(
+        #     frame, text = '()',
+        #     command=lambda: self._on_operator_btn_click_event('()')
+        # )
+        # braketBtn.grid(row=self.NUM_START_ROW - 1, column=2)
         
     def _make_operand_list(self, number):
         if self.operator_click is False:
@@ -103,14 +105,23 @@ class CalculatorView():
     def _allocate_operator_variable(self, operator):
         self.operator = OperatorVO(operator = operator).getOperator()
 
-    def _on_number_btn_click_event(self, number):
+    def _on_number_selected_event(self, number):
         self._make_operand_list(number)
         self._display_selected_btn()
         
-    def _on_operator_btn_click_event(self, operator):
+    def _on_operator_selected_event(self, operator):
         self.operator_click = True
         self._allocate_operator_variable(operator)
-        self._display_selected_btn()
+        endNumIndex = self.displayInputEntry.get()
+        recordStr = f"{self.displayInputEntry.get()} {self.operator}"
+        self.displayRecordEntry.insert(0, recordStr)
+        self.displayInputEntry.delete(0, len(self.displayInputEntry.get()))
+        
+    def _on_key_press(self, event):
+        print(event.char)
+        
+    def _on_operator_key_press(self, event):
+        pass
 
     def _display_selected_btn(self):
         if self.operator_click == False:
@@ -119,13 +130,11 @@ class CalculatorView():
             displayNum = self._change_list_to_number(self.activeNumList)
 
         print(f"displayNum: {displayNum}")
+        self.displayInputEntry.delete(0, len(self.displayInputEntry.get()))
+        self.displayInputEntry.insert(0, displayNum)
         
     def _change_list_to_number(self, list):
-        print(f"list: {list}")
-        print(f"self.operator_click: {self.operator_click}")
         result = self.passiveNum if self.operator_click is False else self.activeNum
-        print(f"result: {result}")
         for char in list:
-            print(f"char: {char}")
             result += str(char)
         return result
