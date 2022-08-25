@@ -99,8 +99,6 @@ class CalculatorView():
             self.passiveNumList.append(number)
         else:
             self.activeNumList.append(number)
-        print(f"self.passiveNumList: {self.passiveNumList}")
-        print(f"self.activeNumList:  {self.activeNumList}")
 
     def _allocate_operator_variable(self, operator):
         self.operator = OperatorVO(operator = operator).getOperator()
@@ -118,9 +116,10 @@ class CalculatorView():
         self.displayInputEntry.delete(0, len(self.displayInputEntry.get()))
         
     def _on_key_press(self, event):
-        operatorList = ['+', '-', '*', '/']
-        if event.char not in operatorList:
-            print(event.char)
+        operatorList = ('+', '-', '*', '/')
+        pressed_key = event.char
+        if pressed_key not in operatorList:
+            self._on_number_selected_event(pressed_key)
             
         
     def _on_operator_key_press(self, event):
