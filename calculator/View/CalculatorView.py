@@ -118,7 +118,10 @@ class CalculatorView():
         self.displayInputEntry.delete(0, len(self.displayInputEntry.get()))
         
     def _on_key_press(self, event):
-        print(event.char)
+        operatorList = ['+', '-', '*', '/']
+        if event.char not in operatorList:
+            print(event.char)
+            
         
     def _on_operator_key_press(self, event):
         pass
@@ -138,3 +141,4 @@ class CalculatorView():
         for char in list:
             result += str(char)
         return result
+    
