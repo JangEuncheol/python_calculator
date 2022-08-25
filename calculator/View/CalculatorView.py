@@ -25,7 +25,6 @@ class CalculatorView():
         root = Tk()
         frame = ttk.Frame(root, padding=10)
         frame.grid()
-        frame.bind('<Key>', self._on_key_press)
         
         self._make_calculator_frame(root, frame)
         self._make_number_btn(frame)
@@ -34,6 +33,7 @@ class CalculatorView():
         frame.focus_set()
         root.mainloop()
     
+
     def _make_calculator_frame(self, root, frame):
         self.displayRecordEntry = ttk.Entry(frame)
         self.displayRecordEntry.grid(row=1, column=2, columnspan=3)
@@ -41,6 +41,11 @@ class CalculatorView():
         self.displayInputEntry.grid(row=2, column=2, columnspan=3)
         closeBtn = ttk.Button(frame, text='Close', command = root.destroy)
         closeBtn.grid(row=8, column=3)
+        
+        self._bind_event(frame)
+
+    def _bind_event(self, frame):
+        frame.bind('<Key>', self._on_key_press)
         
     def _make_number_btn(self, frame):
         for number in range(0, 9):
@@ -52,7 +57,8 @@ class CalculatorView():
             frame, text = 0,
             command=lambda: self._on_number_selected_event(0)
         )
-        zeroBtn.grid(row = 5, column = 2)
+        zeroBtn.grid(row = 7, column = 2)
+        # zeroBtn.bind('<Button-1>',lambda: self._on_number_selected_event(0))
 
     def _make_1_to_9_btn(self, frame, btn, number):
         btn = ttk.Button(
@@ -120,10 +126,8 @@ class CalculatorView():
         pressed_key = event.char
         if pressed_key not in operatorList:
             self._on_number_selected_event(pressed_key)
-            
-        
-    def _on_operator_key_press(self, event):
-        pass
+        else:
+            self._on_operator_selected_event(pressed_key)
 
     def _display_selected_btn(self):
         if self.operator_click == False:
