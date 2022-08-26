@@ -26,7 +26,7 @@ class CalculatorView():
         frame = ttk.Frame(root, padding=10)
         frame.grid()
         
-        self._make_calculator_frame(root, frame)
+        self._make_calculator_frame(frame)
         self._make_number_btn(frame)
         self._make_operator_btn(frame)
         
@@ -34,13 +34,16 @@ class CalculatorView():
         root.mainloop()
     
 
-    def _make_calculator_frame(self, root, frame):
+    def _make_calculator_frame(self, frame):
         self.displayRecordEntry = ttk.Entry(frame)
         self.displayRecordEntry.grid(row=1, column=2, columnspan=3)
         self.displayInputEntry = ttk.Entry(frame)
         self.displayInputEntry.grid(row=2, column=2, columnspan=3)
-        closeBtn = ttk.Button(frame, text='Close', command = root.destroy)
-        closeBtn.grid(row=8, column=3)
+        returnBtn = ttk.Button(
+            frame, text='=',
+            command=lambda: self._on_return_init()
+        )
+        returnBtn.grid(row=8, column=3)
         
         self._bind_event(frame)
 
@@ -110,6 +113,9 @@ class CalculatorView():
         self.operator = OperatorVO(operator = operator).getOperator()
 
     def _on_number_selected_event(self, number):
+        if number == str(0) and (len(self.passiveNumList) == 0 or len(self.activeNumList) == 0):
+            return
+        
         self._make_operand_list(number)
         self._display_selected_btn()
         
@@ -124,7 +130,9 @@ class CalculatorView():
     def _on_key_press(self, event):
         operatorList = ('+', '-', '*', '/')
         pressed_key = event.char
-        if pressed_key not in operatorList:
+        if event.keysym == 'Return':
+            self._on_return_init()
+        elif pressed_key not in operatorList:
             self._on_number_selected_event(pressed_key)
         else:
             self._on_operator_selected_event(pressed_key)
@@ -144,4 +152,7 @@ class CalculatorView():
         for char in list:
             result += str(char)
         return result
+    
+    def _on_return_init(self):
+        print('Return Pressed')
     
