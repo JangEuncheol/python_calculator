@@ -32,7 +32,6 @@ class CalculatorView():
         
         frame.focus_set()
         root.mainloop()
-    
 
     def _make_calculator_frame(self, frame):
         self.displayRecordEntry = ttk.Entry(frame)
