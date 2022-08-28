@@ -14,14 +14,16 @@ class Calculator():
     
     def _set_data(self, param):
         print('Calculator._set_data()')
-        self.passiveNumber = param.get('passiveNum')
-        self.activeNumber = param.get('activeNum')
+        self.passiveNumber = int(param.get('passiveNum'))
+        self.activeNumber = int(param.get('activeNum'))
         self.operator = self._change_symbol_to_string(param.get('operator'))
 
     def calculate(self, **param):
         print('Calculator.calculate()')
         self._set_data(param)
-        return self.operateDict(self.operator)
+        result = self.operateDict.get(self.operator)
+        print(f"result: {result}")
+        return result()
         
     def _operate_add(self):
         return self.passiveNumber + self.activeNumber

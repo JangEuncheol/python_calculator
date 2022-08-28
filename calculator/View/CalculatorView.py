@@ -5,6 +5,7 @@ from tkinter import ttk
 from VO import NumberVO
 from VO.OperatorVO import OperatorVO
 from Business import Calculator
+import re
 
 class CalculatorView():
     NUM_START_ROW = 4
@@ -22,6 +23,7 @@ class CalculatorView():
         self.result = ''
         self.numberBtnList = []
         self.numberList = []
+        self.numberRex = re.compile('\d')
         self.operator = None
         self.operator_click = False
         self.calc = Calculator.Calculator()
@@ -119,23 +121,30 @@ class CalculatorView():
             self.passiveNum = number
 
     def _allocate_operator_variable(self, operator):
+        operatorList = ['+', '-', '*', '/']
+        if operator not in operatorList:
+            return
+
         self.operator = OperatorVO(operator = operator).getOperator()
 
     def _on_number_selected_event(self, number):
         print('_on_number_selected_event()')
         if number == str(0) and (len(self.numberList) == 0 or len(self.numberList) == 0):
             return
+        
+        if not self.numberRex.match(number):
+            return
+        
         self._make_operand_list(number)
         strNum = self._change_list_to_number(self.numberList)
         self._allocate_number_variable(strNum)
-        self._display_selected_btn()
+        self._display_selected_btn(strNum)
         
     def _on_operator_selected_event(self, operator):
         self.operator_click = True
         self._allocate_operator_variable(operator)
         self.numberList = []
-        endNumIndex = self.displayInputEntry.get()
-        recordStr = f"{self.displayInputEntry.get()} {self.operator}"
+        recordStr = f"{self.displayInputEntry.get()} {self.operator} "
         self.displayRecordEntry.insert(0, recordStr)
         self.displayInputEntry.delete(0, len(self.displayInputEntry.get()))
         
@@ -149,16 +158,16 @@ class CalculatorView():
         else:
             self._on_operator_selected_event(pressed_key)
 
-    def _display_selected_btn(self):
+    def _display_selected_btn(self, number):
         print('_display_selected_btn()')
-        if self.operator_click:
-            displayNum = self.activeNum
-        else:
-            displayNum = self.passiveNum
+        # if self.operator_click:
+        #     displayNum = self.activeNum
+        # else:
+        #     displayNum = self.passiveNum
 
-        print(f"displayNum: {displayNum}")
+        print(f"displayNum: {number}")
         self.displayInputEntry.delete(0, len(self.displayInputEntry.get()))
-        self.displayInputEntry.insert(0, displayNum)
+        self.displayInputEntry.insert(0, number)
         
     def _change_list_to_number(self, list):
         result = ''
@@ -170,9 +179,10 @@ class CalculatorView():
         self._calc_result()
     
     def _calc_result(self):
-        self.result = self.calc.calculate(
+        self.passiveNum = self.calc.calculate(
             passiveNum = self.passiveNum,
             activeNum = self.activeNum,
             operator = self.operator
         )
-        print(self.result)
+        
+        self._display_selected_btn(self.passiveNum)
