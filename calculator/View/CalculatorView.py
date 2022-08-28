@@ -160,12 +160,6 @@ class CalculatorView():
 
     def _display_selected_btn(self, number):
         print('_display_selected_btn()')
-        # if self.operator_click:
-        #     displayNum = self.activeNum
-        # else:
-        #     displayNum = self.passiveNum
-
-        print(f"displayNum: {number}")
         self.displayInputEntry.delete(0, len(self.displayInputEntry.get()))
         self.displayInputEntry.insert(0, number)
         
