@@ -1,7 +1,10 @@
+from ast import operator
+from multiprocessing.dummy import active_children
 from tkinter import *
 from tkinter import ttk
 from VO import NumberVO
 from VO.OperatorVO import OperatorVO
+from Business import Calculator
 
 class CalculatorView():
     NUM_START_ROW = 4
@@ -12,14 +15,16 @@ class CalculatorView():
         self._render_calculator()
 
     def _init_default_value(self):
+        print('CalculatorView._init_default_value()')
         self.passiveNum = ''
         self.operator = ''
         self.activeNum = ''
+        self.result = ''
         self.numberBtnList = []
-        self.passiveNumList = []
-        self.activeNumList = []
+        self.numberList = []
         self.operator = None
         self.operator_click = False
+        self.calc = Calculator.Calculator()
 
     def _render_calculator(self):
         root = Tk()
@@ -40,7 +45,7 @@ class CalculatorView():
         self.displayInputEntry.grid(row=2, column=2, columnspan=3)
         returnBtn = ttk.Button(
             frame, text='=',
-            command=lambda: self._on_return_init()
+            command=lambda: self._on_return_pressed()
         )
         returnBtn.grid(row=8, column=3)
         
@@ -103,24 +108,32 @@ class CalculatorView():
         # braketBtn.grid(row=self.NUM_START_ROW - 1, column=2)
         
     def _make_operand_list(self, number):
-        if self.operator_click is False:
-            self.passiveNumList.append(number)
+        print('_make_operand_list()')
+        self.numberList.append(number)
+    
+    def _allocate_number_variable(self, number):
+        print('_allocate_number_variabel()')
+        if self.operator_click:
+            self.activeNum = number
         else:
-            self.activeNumList.append(number)
+            self.passiveNum = number
 
     def _allocate_operator_variable(self, operator):
         self.operator = OperatorVO(operator = operator).getOperator()
 
     def _on_number_selected_event(self, number):
-        if number == str(0) and (len(self.passiveNumList) == 0 or len(self.activeNumList) == 0):
+        print('_on_number_selected_event()')
+        if number == str(0) and (len(self.numberList) == 0 or len(self.numberList) == 0):
             return
-        
         self._make_operand_list(number)
+        strNum = self._change_list_to_number(self.numberList)
+        self._allocate_number_variable(strNum)
         self._display_selected_btn()
         
     def _on_operator_selected_event(self, operator):
         self.operator_click = True
         self._allocate_operator_variable(operator)
+        self.numberList = []
         endNumIndex = self.displayInputEntry.get()
         recordStr = f"{self.displayInputEntry.get()} {self.operator}"
         self.displayRecordEntry.insert(0, recordStr)
@@ -130,28 +143,36 @@ class CalculatorView():
         operatorList = ('+', '-', '*', '/')
         pressed_key = event.char
         if event.keysym == 'Return':
-            self._on_return_init()
+            self._on_return_pressed()
         elif pressed_key not in operatorList:
             self._on_number_selected_event(pressed_key)
         else:
             self._on_operator_selected_event(pressed_key)
 
     def _display_selected_btn(self):
-        if self.operator_click == False:
-            displayNum = self._change_list_to_number(self.passiveNumList)
+        print('_display_selected_btn()')
+        if self.operator_click:
+            displayNum = self.activeNum
         else:
-            displayNum = self._change_list_to_number(self.activeNumList)
+            displayNum = self.passiveNum
 
         print(f"displayNum: {displayNum}")
         self.displayInputEntry.delete(0, len(self.displayInputEntry.get()))
         self.displayInputEntry.insert(0, displayNum)
         
     def _change_list_to_number(self, list):
-        result = self.passiveNum if self.operator_click is False else self.activeNum
+        result = ''
         for char in list:
             result += str(char)
         return result
     
-    def _on_return_init(self):
-        print('Return Pressed')
+    def _on_return_pressed(self):
+        self._calc_result()
     
+    def _calc_result(self):
+        self.result = self.calc.calculate(
+            passiveNum = self.passiveNum,
+            activeNum = self.activeNum,
+            operator = self.operator
+        )
+        print(self.result)
